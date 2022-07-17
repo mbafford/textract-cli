@@ -10,7 +10,8 @@ setup(name='textract-cli',
       url='https://github.com/mbafford/textract-cli',
       install_requires=[
           'boto3==1.24.31', 
-          'tqdm==4.64.0'
+          'tqdm==4.64.0',
+          'click==8.1.3'
       ],
       entry_points = {
         'console_scripts': ['textract-cli=textract_cli.textract_cli:main'],
