@@ -38,6 +38,10 @@ git clone https://github.com/mbafford/textract-cli.git
 .env/bin/pip install -e textract-cli/
 ```
 
+# AWS Credentials
+
+This uses [boto3](https://github.com/boto/boto3) for all of the API calls, so configuring the AWS credentials is the same as any other boto3 project. See [using boto3](https://github.com/boto/boto3#using-boto3) for more specifics.
+
 # Usage
 
 ```
