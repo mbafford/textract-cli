@@ -8,6 +8,8 @@ https://docs.aws.amazon.com/textract/latest/dg/API_AnalyzeDocument.html
 
 Uses the synchronous version of this API, which does not require creating S3 files or monitoring the status of the job.
 
+Inspired by [Simon Willison's s3-ocr](https://simonwillison.net/2022/Jun/30/s3-ocr/). I wanted something similar, but without the S3 overhead (and I could deal with the limitations of not supporting multi-page PDFs). Theoretically, this could also be done with `aws-cli`, but that doesn't support synchronous mode.
+
 ## Not Supported
 
 Does not support AnalyzeID nor AnalyzeDocument with FeatureTypes = QUERIES.
@@ -41,6 +43,15 @@ git clone https://github.com/mbafford/textract-cli.git
 # AWS Credentials
 
 This uses [boto3](https://github.com/boto/boto3) for all of the API calls, so configuring the AWS credentials is the same as any other boto3 project. See [using boto3](https://github.com/boto/boto3#using-boto3) for more specifics.
+
+# Supported File Types
+
+- Standard image types (jpeg, png, tiff, gif, etc) should be supported
+ - folder mode only checks for a handful of file extensions
+ - single file mode submits a job for anything you pass, regardless of file type
+- Single-page PDF is supported
+- Multi-page PDF is NOT supported (only supported in asynchronous mode, in which case, [s3-ocr](https://simonwillison.net/2022/Jun/30/s3-ocr/) is likely a better choice)
+
 
 # Usage
 
