@@ -1,4 +1,4 @@
-#!.env/bin/python
+#/bin/python
 
 from typing import List, Literal
 import boto3
@@ -11,12 +11,16 @@ from tqdm import tqdm
 import click
     
 IMAGE_EXTENSIONS = set(['jpeg', 'jpg', 'png', 'pdf', 'tiff'])
-ANALYZE_TYPES = Literal['text', 'tables', 'forms', 'expenses']
+ANALYZE_TYPES = Literal['text', 'tables', 'forms', 'expenses','image']
 
 def json_filename(filename:str, analyze_type:ANALYZE_TYPES) -> str:
+    if analyze_type == 'image':
+        return f"{filename}.rekognition.{analyze_type}.json"
     return f"{filename}.textract.{analyze_type}.json"
 
-def txt_filename(filename:str) -> str:
+def txt_filename(filename:str, analyze_type:ANALYZE_TYPES) -> str:
+    if analyze_type == 'image':
+        return filename + ".rekognition.txt"
     return filename + ".textract.txt"
 
 def expand_paths(paths:List[str]) -> List[str]:
@@ -38,11 +42,15 @@ def expand_paths(paths:List[str]) -> List[str]:
 @click.option('--tables',    'analyze_type', flag_value = 'tables')
 @click.option('--forms',     'analyze_type', flag_value = 'forms')
 @click.option('--expenses',  'analyze_type', flag_value = 'expenses')
+@click.option('--image',      'analyze_type', flag_value = 'image')
 @click.argument('paths', nargs=-1, required=True, type=click.Path(exists=True))
 def main(analyze_type: ANALYZE_TYPES, paths:List[str]):
     print(f"Running analysis with type: {analyze_type}", file=sys.stderr)
 
-    client = boto3.client('textract')
+    if analyze_type == 'image':
+        client = boto3.client('rekognition')
+    else:
+        client = boto3.client('textract')
 
     src_files = expand_paths(paths)
     needs_ocr = list(filter(lambda f: not os.path.isfile(json_filename(f, analyze_type)), src_files))
@@ -69,7 +77,12 @@ def main(analyze_type: ANALYZE_TYPES, paths:List[str]):
                 text = "\n".join([
                     b['Text'] for b in response["Blocks"] if b['BlockType'] == 'LINE'
                 ])
-
+            elif analyze_type == 'image':
+                response = client.detect_text( Image={ 'Bytes': bytes } )
+                
+                text = "\n".join([
+                    b['DetectedText'] for b in response["TextDetections"] if b['Type'] == 'LINE'
+                ])
             elif analyze_type == 'expenses':
                 response = client.analyze_expense( Document={ 'Bytes': bytes } )
 
@@ -90,7 +103,7 @@ def main(analyze_type: ANALYZE_TYPES, paths:List[str]):
                 out.write("\n")
 
             if text:
-                out_txt = txt_filename(file)
+                out_txt = txt_filename(file, analyze_type)
                 with open(out_txt, "w") as out:
                     out.write(text);
                     out.write("\n");
