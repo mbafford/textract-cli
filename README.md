@@ -6,7 +6,7 @@ https://docs.aws.amazon.com/textract/latest/dg/API_DetectDocumentText.html
 https://docs.aws.amazon.com/textract/latest/dg/API_AnalyzeExpense.html
 https://docs.aws.amazon.com/textract/latest/dg/API_AnalyzeDocument.html
 
-Uses the AWS Rekognition API DetectText to analyze an image and store the analysis results as JSON.
+Uses the AWS Rekognition API DetectText to analyze an photo (.PNG or .JPEG) to detect text in live scenes and store the analysis results as JSON.
 
 https://docs.aws.amazon.com/rekognition/latest/APIReference/API_DetectText.html
 
