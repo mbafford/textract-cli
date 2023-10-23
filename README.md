@@ -6,6 +6,10 @@ https://docs.aws.amazon.com/textract/latest/dg/API_DetectDocumentText.html
 https://docs.aws.amazon.com/textract/latest/dg/API_AnalyzeExpense.html
 https://docs.aws.amazon.com/textract/latest/dg/API_AnalyzeDocument.html
 
+Uses the AWS Rekognition API DetectText to analyze an photo (.PNG or .JPEG) to detect text in live scenes and store the analysis results as JSON.
+
+https://docs.aws.amazon.com/rekognition/latest/APIReference/API_DetectText.html
+
 Uses the synchronous version of this API, which does not require creating S3 files or monitoring the status of the job.
 
 Inspired by [Simon Willison's s3-ocr](https://simonwillison.net/2022/Jun/30/s3-ocr/). I wanted something similar, but without the S3 overhead (and I could deal with the limitations of not supporting multi-page PDFs). Theoretically, this could also be done with `aws-cli`, but that doesn't support synchronous mode.
@@ -56,7 +60,7 @@ This uses [boto3](https://github.com/boto/boto3) for all of the API calls, so co
 # Usage
 
 ```
-.env/bin/python textract.py [--text/--expenses/--forms/--tables] <folder with images/image file> [folder with images/image file] [...]
+.env/bin/python textract.py [--text/--expenses/--forms/--tables/--image] <folder with images/image file> [folder with images/image file] [...]
 ```
 
 Accepts multile files or folders as arguments.
@@ -92,3 +96,6 @@ Outputs one or two files for each image file input:
 ## Forms Analysis (AnalyzeDocument, FeatureTypes=FORMS)
 - [image file].textract.forms.json - The exact JSON returned by the AWS API 
  
+## Image Analysis (DetectText)
+- [image file].rekognition.json - The exact JSON returned by the AWS API 
+- [image file].rekognition.txt  - The text content for each of the "LINE" types in the above JSON response.
